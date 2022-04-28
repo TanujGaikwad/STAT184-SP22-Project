@@ -89,3 +89,9 @@ ggplot(RatingsCount, aes(x = reorder(rating, -rating), y = count, fill = as.fact
 ```
 
 This graph is a showing of how many movies got a certain rating by an individual user. As evident, the majority of the ratings are closer to the higher end with the most ratings coming in for 4 stars and the second most for 5 stars. It seems raters would rather put a whole number rating for the movie rather than a half a rating, but the count for the 3.5-star ratings versus the 3-Star and 4-Star ratings is showing itself to be the exception. Overall, people would more rather rate a movie positively than negatively to boost its score instead of dropping it after viewing it.
+
+### Resources
+1. https://statisticsglobe.com/r-remove-data-frame-rows-with-some-or-all-na
+2. https://rawgit.com/rstudio/cheatsheets/main/lubridate.pdf
+3. https://rstudio-pubs-static.s3.amazonaws.com/74603_76cd14d5983f47408fdf0b323550b846.html
+4. https://www.rstudio.com/resources/cheatsheets/
