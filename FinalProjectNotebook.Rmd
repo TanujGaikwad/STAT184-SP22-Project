@@ -1,0 +1,91 @@
+---
+title: "Final Project - STAT 184"
+author: "Tanuj Gaikwad"
+date: "April 28, 2022"
+output: html_notebook
+---
+
+### Load Packages & Read in Data
+```{r warning = FALSE, message = FALSE}
+library(tidyverse, warn.conflicts = FALSE)
+library(lubridate)
+options(dplyr.summarise.inform = FALSE)
+
+Movies = read.csv("movies.csv")
+Ratings = read.csv("ratings.csv")
+Tags = read.csv("tags.csv")
+```
+
+### Data Wrangle the Timestamps
+```{r warning = FALSE, message = FALSE}
+Ratings <- 
+  Ratings %>%
+  mutate(rating_date = as_datetime(timestamp))
+
+Tags <-
+  Tags %>%
+  mutate(tag_date = as_datetime(timestamp))
+
+head(Ratings, 3)
+head(Tags, 3)
+```
+### Joining data where Person RATED & TAGGED a movie
+```{r warning = FALSE, message = FALSE}
+Ratings_n_Tags <-
+  Tags %>%
+  left_join(Ratings, by = c("movieId", "userId")) %>%
+  left_join(Movies, by = "movieId") %>%
+  na.omit() %>%
+  select(userId, rating, rating_date, tag, tag_date, title, genres)
+
+head(Ratings_n_Tags, 3)
+```
+
+### New release_year column and modifying movie titles to remove years
+```{r warning = FALSE, message = FALSE}
+Ratings_n_Tags <-
+  Ratings_n_Tags %>%
+  mutate(release_year = str_extract(title, "\\d+"))
+
+Ratings_n_Tags$title <- gsub("\\(\\d+)", "", Ratings_n_Tags$title)
+
+head(Ratings_n_Tags, 3)
+```
+
+### Data Visualization: First Graph
+### Top 10 Rated Movie Genres (10 Most Frequently Rated Genres)
+```{r warning = FALSE, message = FALSE}
+#Quick Data Wrangle to get the top 10 Genres
+GenreCounts <-
+  Ratings_n_Tags %>%
+  group_by(genres) %>%
+  summarise(count = n()) %>%
+  arrange(desc(count)) %>%
+  head(10)
+
+#GGPlot Graph
+ggplot(GenreCounts, aes(x = reorder(genres, -count), y = count)) +
+  geom_bar(stat = "identity") +
+  labs(y = "Count", x = "Genre", title = "Top 10 Rated Genres") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+This graph shows a bar graph of the top 10 most rated genres. Since the graph is ordered from most ratings to least, we can see that the genre of movie that got rated the most is Drama followed closely by a combo genre, Comedy|Crime|Drama|Thriller.
+
+### Data Visualization: Second Graph
+### Determine Count of each rating
+```{r warning = FALSE, message = FALSE}
+#Quick Data Wrangle to get count of all ratings
+RatingsCount <-
+  Ratings_n_Tags %>%
+  group_by(rating) %>%
+  summarise(count = n()) %>%
+  arrange(desc(rating))
+
+#GGPlot Graph
+ggplot(RatingsCount, aes(x = reorder(rating, -rating), y = count, fill = as.factor(rating))) +
+  geom_bar(stat = "identity") +
+  labs(y = "Count", x = "Rating", title = "Count of Ratings Given to Movies", fill = "Rating", color = "Rating")
+```
+
+This graph is a showing of how many movies got a certain rating by an individual user. As evident, the majority of the ratings are closer to the higher end with the most ratings coming in for 4 stars and the second most for 5 stars. It seems raters would rather put a whole number rating for the movie rather than a half a rating, but the count for the 3.5-star ratings versus the 3-Star and 4-Star ratings is showing itself to be the exception. Overall, people would more rather rate a movie positively than negatively to boost its score instead of dropping it after viewing it.
