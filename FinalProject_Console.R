@@ -7,6 +7,10 @@ Movies = read.csv("movies.csv")
 Ratings = read.csv("ratings.csv")
 Tags = read.csv("tags.csv")
 
+# This is a random comment
+
+tags <- Tags %>%
+  filter(tag != "")
 
 # First Chunk: Data Wrangle the Timestamps
 
